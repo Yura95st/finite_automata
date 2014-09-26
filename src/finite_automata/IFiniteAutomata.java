@@ -3,14 +3,17 @@ package finite_automata;
 import java.util.List;
 import java.util.Map;
 
+import finite_automata.Exceptions.StateIsAlreadyFinalException;
+
 public interface IFiniteAutomata
 {
 	/**
 	 * Adds finite state
 	 *
 	 * @param state
+	 * @throws StateIsAlreadyFinalException
 	 */
-	void addFiniteState(int state);
+	void addFiniteState(int state) throws StateIsAlreadyFinalException;
 
 	/**
 	 * Adds transition

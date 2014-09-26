@@ -16,6 +16,63 @@ public class FiniteAutomataTests
 	private IFiniteAutomata finiteAutomata;
 
 	@Test
+	public void addFiniteState_FiniteStateSuccessfullySet()
+	{
+		int state = 7;
+
+		this.finiteAutomata.setStatesCardinality(state + 1);
+
+		try
+		{
+			this.finiteAutomata.addFiniteState(state);
+		}
+		catch (StateIsAlreadyFinalException e)
+		{
+			Assert.fail();
+		}
+
+		Assert.assertEquals(true, this.finiteAutomata.getFiniteStates()
+				.contains(state));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void addFiniteState_InvalidState_ThrowsIllegalArgumentException()
+	{
+		int statesCardinality = 7;
+
+		this.finiteAutomata.setStatesCardinality(statesCardinality);
+
+		try
+		{
+			this.finiteAutomata.addFiniteState(statesCardinality + 1);
+		}
+		catch (StateIsAlreadyFinalException e)
+		{
+			Assert.fail();
+		}
+	}
+
+	@Test
+	public void addFiniteState_StateIsAlreadyFinite_ThrowsStateIsAlreadyFinalException()
+	{
+		int state = 7;
+
+		this.finiteAutomata.setStatesCardinality(state + 1);
+
+		try
+		{
+			this.finiteAutomata.addFiniteState(state);
+			this.finiteAutomata.addFiniteState(state);
+
+			Assert.fail();
+		}
+		catch (StateIsAlreadyFinalException e)
+		{
+
+		}
+	}
+
+	@Test
 	public void getAlphabet_AlphabetCardinalityIsNotSet_ReturnsEmptyList()
 	{
 		Assert.assertEquals(0, this.finiteAutomata.getAlphabet().size());
@@ -28,9 +85,10 @@ public class FiniteAutomataTests
 	}
 
 	@Test
-	public void getInitialState_InitialStateIsNotSet_ReturnsZero()
+	public void getInitialState_InitialStateIsNotSet_ReturnsDefaultValue()
 	{
-		Assert.assertEquals(0, this.finiteAutomata.getInitialState());
+		Assert.assertEquals(FiniteAutomata.DEFAULT_INITIAL_STATE,
+				this.finiteAutomata.getInitialState());
 	}
 
 	@Test
@@ -47,8 +105,8 @@ public class FiniteAutomataTests
 			this.finiteAutomata.setAlphabetCardinality(-1);
 
 			this.finiteAutomata
-					.setAlphabetCardinality(FiniteAutomata.FINITE_AUTOMATA_ALPHABET
-							.size());
+			.setAlphabetCardinality(FiniteAutomata.FINITE_AUTOMATA_ALPHABET
+					.length() + 1);
 
 			Assert.fail();
 		}
@@ -69,47 +127,23 @@ public class FiniteAutomataTests
 	}
 
 	@Test
-	public void setFiniteState_FiniteStateSuccessfullySet()
-	{
-		int state = 7;
-
-		this.finiteAutomata.setStatesCardinality(state + 1);
-
-		this.finiteAutomata.addFiniteState(state);
-
-		Assert.assertEquals(true, this.finiteAutomata.getFiniteStates()
-				.contains(state));
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void setFiniteState_InvalidState_ThrowsIllegalArgumentException()
-	{
-		int statesCardinality = 7;
-
-		this.finiteAutomata.setStatesCardinality(statesCardinality);
-
-		this.finiteAutomata.addFiniteState(statesCardinality + 1);
-	}
-
-	@Test(expected = StateIsAlreadyFinalException.class)
-	public void setFiniteState_StateIsAlreadyFinite_ThrowsStateIsAlreadyFinalException()
-	{
-		int state = 7;
-
-		this.finiteAutomata.setStatesCardinality(state + 1);
-
-		this.finiteAutomata.addFiniteState(state);
-		this.finiteAutomata.addFiniteState(state);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
 	public void setInitialState_InvalidState_ThrowsIllegalArgumentException()
 	{
 		int statesCardinality = 7;
 
 		this.finiteAutomata.setStatesCardinality(statesCardinality);
 
-		this.finiteAutomata.setInitialState(statesCardinality + 1);
+		try
+		{
+			this.finiteAutomata.setInitialState(-1);
+
+			this.finiteAutomata.setInitialState(statesCardinality + 1);
+
+			Assert.fail();
+		}
+		catch (IllegalArgumentException exception)
+		{
+		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -118,19 +152,35 @@ public class FiniteAutomataTests
 		this.finiteAutomata.setStatesCardinality(-1);
 	}
 
+	@Test
+	public void setStatesCardinality_SetsStatesAndClearsTransitionsMapFiniteStatesAndInitialState()
+	{
+		int setStatesCardinality = 2;
+
+		this.finiteAutomata.setStatesCardinality(setStatesCardinality);
+
+		Assert.assertEquals(setStatesCardinality,
+				this.finiteAutomata.getStatesCardinality());
+
+		Assert.assertEquals(FiniteAutomata.DEFAULT_INITIAL_STATE,
+				this.finiteAutomata.getInitialState());
+		Assert.assertEquals(0, this.finiteAutomata.getFiniteStates().size());
+		Assert.assertEquals(0, this.finiteAutomata.getTransitionsMap().size());
+	}
+
 	@Before
 	public void setUp()
 	{
 		this.alphabet = new ArrayList<Character>()
-				{
+		{
 			{
 				this.add('a');
 				this.add('b');
 				this.add('c');
 			}
-				};
+		};
 
-				this.finiteAutomata = new FiniteAutomata();
+		this.finiteAutomata = new FiniteAutomata();
 	}
 
 	@Test

@@ -1,48 +1,49 @@
 package finite_automata;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import finite_automata.Exceptions.StateIsAlreadyFinalException;
 
 public class FiniteAutomata implements IFiniteAutomata
 {
-	public static final Set<Character> FINITE_AUTOMATA_ALPHABET = new HashSet<Character>()
+	public static final int DEFAULT_INITIAL_STATE = 0;
+
+	public static final String FINITE_AUTOMATA_ALPHABET = "abcdefghijklmnopqrstuvwxyz";
+
+	private List<Character> alphabet;
+
+	private List<Integer> finiteStates;
+
+	private int initialState;
+
+	private int statesCardinality;
+
+	private Map<Transition, Integer> transitionsMap;
+
+	public FiniteAutomata()
 	{
-		{
-			this.add('a');
-			this.add('b');
-			this.add('c');
-			this.add('d');
-			this.add('e');
-			this.add('f');
-			this.add('g');
-			this.add('h');
-			this.add('i');
-			this.add('j');
-			this.add('k');
-			this.add('l');
-			this.add('m');
-			this.add('n');
-			this.add('o');
-			this.add('p');
-			this.add('q');
-			this.add('r');
-			this.add('s');
-			this.add('t');
-			this.add('u');
-			this.add('v');
-			this.add('w');
-			this.add('x');
-			this.add('y');
-			this.add('z');
-		}
-	};
+		this.alphabet = new ArrayList<Character>();
+		this.statesCardinality = 0;
+		this.initialState = FiniteAutomata.DEFAULT_INITIAL_STATE;
+		this.finiteStates = new ArrayList<Integer>();
+		this.transitionsMap = new HashMap<Transition, Integer>();
+	}
 
 	@Override
-	public void addFiniteState(int state)
+	public void addFiniteState(int state) throws StateIsAlreadyFinalException
 	{
-		// TODO Auto-generated method stub
+		this.checkState(state);
+
+		if (this.finiteStates.contains(state))
+		{
+			throw new StateIsAlreadyFinalException(String.format(
+					"State: %1$d is already final.", state));
+		}
+
+		this.finiteStates.add(state);
 	}
 
 	@Override
@@ -52,39 +53,50 @@ public class FiniteAutomata implements IFiniteAutomata
 
 	}
 
+	private void checkState(int state)
+	{
+		if (state < 0)
+		{
+			throw new IllegalArgumentException(
+					"Argument must be not less than zero: state.");
+		}
+
+		if (state >= this.statesCardinality)
+		{
+			throw new IllegalArgumentException(String.format(
+					"State: %1$d must be less than states cardinality: %2$d",
+					state, this.statesCardinality));
+		}
+	}
+
 	@Override
 	public List<Character> getAlphabet()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.alphabet;
 	}
 
 	@Override
 	public List<Integer> getFiniteStates()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.finiteStates;
 	}
 
 	@Override
 	public int getInitialState()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return this.initialState;
 	}
 
 	@Override
 	public int getStatesCardinality()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return this.statesCardinality;
 	}
 
 	@Override
 	public Map<Transition, Integer> getTransitionsMap()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return this.transitionsMap;
 	}
 
 	@Override
@@ -97,21 +109,52 @@ public class FiniteAutomata implements IFiniteAutomata
 	@Override
 	public void setAlphabetCardinality(int cardinality)
 	{
-		// TODO Auto-generated method stub
+		if (cardinality < 0)
+		{
+			throw new IllegalArgumentException(
+					"Argument must be not less than zero: cardinality.");
+		}
 
+		if (cardinality > FiniteAutomata.FINITE_AUTOMATA_ALPHABET.length())
+		{
+			throw new IllegalArgumentException(
+					String.format(
+							"Cardinality: %1$d must be less or equal to FINITE_AUTOMATA_ALPHABET size: %2$d",
+							cardinality,
+							FiniteAutomata.FINITE_AUTOMATA_ALPHABET.length()));
+		}
+
+		this.alphabet.clear();
+
+		for (int i = 0; i < cardinality; i++)
+		{
+			this.alphabet
+					.add(FiniteAutomata.FINITE_AUTOMATA_ALPHABET.charAt(i));
+		}
 	}
 
 	@Override
-	public void setInitialState(int i)
+	public void setInitialState(int state)
 	{
-		// TODO Auto-generated method stub
+		this.checkState(state);
 
+		this.initialState = state;
 	}
 
 	@Override
 	public void setStatesCardinality(int cardinality)
 	{
-		// TODO Auto-generated method stub
+		if (cardinality < 0)
+		{
+			throw new IllegalArgumentException(
+					"Argument must be not less than zero: cardinality.");
+		}
 
+		this.initialState = FiniteAutomata.DEFAULT_INITIAL_STATE;
+
+		this.finiteStates.clear();
+		this.transitionsMap.clear();
+
+		this.statesCardinality = cardinality;
 	}
 }
