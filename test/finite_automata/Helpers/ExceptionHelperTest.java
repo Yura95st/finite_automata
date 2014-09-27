@@ -1,0 +1,29 @@
+package finite_automata.Helpers;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ExceptionHelperTest
+{
+
+	@Test
+	public void getFullExceptionMessage_ExceptionIsNull_ReturnEmptyString()
+	{
+		Assert.assertEquals("", ExceptionHelper.getFullExceptionMessage(null));
+	}
+
+	@Test
+	public void getFullExceptionMessage_ReturnValidString()
+	{
+		Exception innerException = new Exception("Inner exception message");
+		Exception exception = new Exception("Exception message", innerException);
+		
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		stringBuilder.append(exception.getMessage());
+		stringBuilder.append(System.getProperty("line.separator"));
+		stringBuilder.append(innerException.getMessage());
+		
+		Assert.assertEquals(stringBuilder.toString(), ExceptionHelper.getFullExceptionMessage(exception));
+	}
+}

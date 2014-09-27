@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import finite_automata.Exceptions.StateIsAlreadyFinalException;
+import finite_automata.Exceptions.TransitionAlreadyExistsException;
 
 public class FiniteAutomata implements IFiniteAutomata
 {
@@ -47,10 +48,32 @@ public class FiniteAutomata implements IFiniteAutomata
 	}
 
 	@Override
-	public void addTransition(Transition transition, int state)
+	public void addTransition(Transition transition, int state) throws TransitionAlreadyExistsException
 	{
-		// TODO Auto-generated method stub
-
+		if (transition == null)
+		{
+			throw new IllegalArgumentException("Argument can't be null: transition.");
+		}
+		
+		if (state < 0 || state >= this.statesCardinality)
+		{
+			throw new IllegalArgumentException(String.format("State value: %1$d is invalid.", state));
+		}
+		
+		if (this.transitionsMap.containsKey(transition))
+		{
+			throw new TransitionAlreadyExistsException(String.format("Transition (%1$d;%2$s) already exists.", transition.getState(), transition.getCharacter()));
+		}
+		
+		char character = transition.getCharacter();
+		int fromState = transition.getState();
+		
+		if (!this.alphabet.contains(character) || fromState < 0 || fromState >= this.statesCardinality)
+		{
+			throw new IllegalArgumentException(String.format("Transition (%1$d;%2$s) is invalid.", transition.getState(), transition.getCharacter()));
+		}
+		
+		this.transitionsMap.put(transition, state);
 	}
 
 	private void checkState(int state)
@@ -125,6 +148,7 @@ public class FiniteAutomata implements IFiniteAutomata
 		}
 
 		this.alphabet.clear();
+		this.transitionsMap.clear();
 
 		for (int i = 0; i < cardinality; i++)
 		{

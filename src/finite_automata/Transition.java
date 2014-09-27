@@ -6,7 +6,7 @@ public class Transition
 
 	private int state;
 
-	public Transition(char character, int state)
+	public Transition(int state, char character)
 	{
 		this.character = character;
 		this.state = state;

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import finite_automata.Exceptions.StateIsAlreadyFinalException;
+import finite_automata.Exceptions.TransitionAlreadyExistsException;
 
 public interface IFiniteAutomata
 {
@@ -20,8 +21,10 @@ public interface IFiniteAutomata
 	 *
 	 * @param transition
 	 * @param state
+	 * @throws TransitionAlreadyExistsException
 	 */
-	void addTransition(Transition transition, int state);
+	void addTransition(Transition transition, int state)
+			throws TransitionAlreadyExistsException;
 
 	/**
 	 * Gets alphabet
