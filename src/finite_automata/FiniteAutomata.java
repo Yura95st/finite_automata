@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import finite_automata.Exceptions.NonExistentTransitionException;
 import finite_automata.Exceptions.StateIsAlreadyFinalException;
 import finite_automata.Exceptions.TransitionAlreadyExistsException;
 
@@ -123,10 +124,19 @@ public class FiniteAutomata implements IFiniteAutomata
 	}
 
 	@Override
-	public void removeTransition(Transition transition, int state)
+	public void removeTransition(Transition transition) throws NonExistentTransitionException
 	{
-		// TODO Auto-generated method stub
-
+		if (transition == null)
+		{
+			throw new IllegalArgumentException("Argument can't be null: transition.");
+		}
+		
+		if (!this.transitionsMap.containsKey(transition))
+		{
+			throw new NonExistentTransitionException(String.format("Transition (%1$d;%2$s) does not exist.", transition.getState(), transition.getCharacter()));
+		}
+		
+		this.transitionsMap.remove(transition);
 	}
 
 	@Override

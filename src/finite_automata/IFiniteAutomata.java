@@ -3,6 +3,7 @@ package finite_automata;
 import java.util.List;
 import java.util.Map;
 
+import finite_automata.Exceptions.NonExistentTransitionException;
 import finite_automata.Exceptions.StateIsAlreadyFinalException;
 import finite_automata.Exceptions.TransitionAlreadyExistsException;
 
@@ -65,9 +66,8 @@ public interface IFiniteAutomata
 	 * Removes transition
 	 *
 	 * @param transition
-	 * @param state
 	 */
-	void removeTransition(Transition transition, int state);
+	void removeTransition(Transition transition) throws NonExistentTransitionException;
 
 	/**
 	 * Sets cardinality of the alphabet
