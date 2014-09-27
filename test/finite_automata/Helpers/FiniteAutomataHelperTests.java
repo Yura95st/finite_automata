@@ -9,40 +9,9 @@ import finite_automata.IFiniteAutomata;
 import finite_automata.Transition;
 import finite_automata.Exceptions.FailedToGetFiniteAutomataFromStringListException;
 
-public class FiniteAutomataHelperTest
+public class FiniteAutomataHelperTests
 {
 	private IFiniteAutomata testFiniteAutomata;
-
-	@Test
-	public void getFiniteAutomataFromStringList_ListIsNull_ThrowsIllegalArgumentException()
-	{
-		try
-		{
-			FiniteAutomataHelper.getFiniteAutomataFromStringList(null);
-
-			Assert.fail();
-		}
-		catch (FailedToGetFiniteAutomataFromStringListException e)
-		{
-		}
-	}
-
-	@Test
-	public void getFiniteAutomataFromStringList_ReturnsValidFiniteAutomata()
-	{
-		try
-		{
-			IFiniteAutomata finiteAutomata = FiniteAutomataHelper
-					.getFiniteAutomataFromStringList(FiniteAutomataHelper
-							.convertFiniteAutomataToList(this.testFiniteAutomata));
-			
-			Assert.assertEquals(this.testFiniteAutomata.getAlphabet(), finiteAutomata.getAlphabet());
-		}
-		catch (FailedToGetFiniteAutomataFromStringListException e)
-		{
-			Assert.fail();
-		}
-	}
 
 	@Before
 	public void setUp() throws Exception

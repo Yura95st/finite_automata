@@ -3,7 +3,7 @@ package finite_automata.Helpers;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ExceptionHelperTest
+public class ExceptionHelperTests
 {
 
 	@Test
