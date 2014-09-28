@@ -12,7 +12,8 @@ public class FailedToGetFiniteAutomataFromStringListException extends Exception
 		super(message);
 	}
 
-	public FailedToGetFiniteAutomataFromStringListException(String message, Throwable cause)
+	public FailedToGetFiniteAutomataFromStringListException(String message,
+			Throwable cause)
 	{
 		super(message, cause);
 	}

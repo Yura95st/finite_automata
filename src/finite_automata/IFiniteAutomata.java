@@ -19,12 +19,13 @@ public interface IFiniteAutomata
 
 	/**
 	 * Adds transition
-	 *
-	 * @param transition
+	 * 
 	 * @param state
+	 * @param transition
+	 *
 	 * @throws TransitionAlreadyExistsException
 	 */
-	void addTransition(Transition transition, int state)
+	void addTransition(int state, Transition transition)
 			throws TransitionAlreadyExistsException;
 
 	/**
@@ -60,14 +61,16 @@ public interface IFiniteAutomata
 	 *
 	 * @return
 	 */
-	Map<Transition, Integer> getTransitionsMap();
+	Map<Integer, List<Transition>> getTransitionsMap();
 
 	/**
 	 * Removes transition
-	 *
+	 * 
+	 * @param state
 	 * @param transition
 	 */
-	void removeTransition(Transition transition) throws NonExistentTransitionException;
+	void removeTransition(int state, Transition transition)
+			throws NonExistentTransitionException;
 
 	/**
 	 * Sets cardinality of the alphabet

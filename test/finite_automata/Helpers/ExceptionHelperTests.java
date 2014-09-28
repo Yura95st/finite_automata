@@ -17,13 +17,14 @@ public class ExceptionHelperTests
 	{
 		Exception innerException = new Exception("Inner exception message");
 		Exception exception = new Exception("Exception message", innerException);
-		
+
 		StringBuilder stringBuilder = new StringBuilder();
-		
+
 		stringBuilder.append(exception.getMessage());
 		stringBuilder.append(System.getProperty("line.separator"));
 		stringBuilder.append(innerException.getMessage());
-		
-		Assert.assertEquals(stringBuilder.toString(), ExceptionHelper.getFullExceptionMessage(exception));
+
+		Assert.assertEquals(stringBuilder.toString(),
+				ExceptionHelper.getFullExceptionMessage(exception));
 	}
 }

@@ -1,13 +1,10 @@
 package finite_automata.Helpers;
 
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
 import finite_automata.FiniteAutomata;
 import finite_automata.IFiniteAutomata;
 import finite_automata.Transition;
-import finite_automata.Exceptions.FailedToGetFiniteAutomataFromStringListException;
 
 public class FiniteAutomataHelperTests
 {
@@ -23,9 +20,9 @@ public class FiniteAutomataHelperTests
 		this.testFiniteAutomata.setInitialState(0);
 		this.testFiniteAutomata.addFiniteState(2);
 
-		this.testFiniteAutomata.addTransition(new Transition(0, 'a'), 1);
-		this.testFiniteAutomata.addTransition(new Transition(0, 'b'), 2);
-		this.testFiniteAutomata.addTransition(new Transition(1, 'a'), 0);
-		this.testFiniteAutomata.addTransition(new Transition(1, 'b'), 2);
+		this.testFiniteAutomata.addTransition(1, new Transition(0, 'a'));
+		this.testFiniteAutomata.addTransition(2, new Transition(0, 'b'));
+		this.testFiniteAutomata.addTransition(0, new Transition(1, 'a'));
+		this.testFiniteAutomata.addTransition(2, new Transition(1, 'b'));
 	}
 }

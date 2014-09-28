@@ -23,7 +23,7 @@ public class FiniteAutomata implements IFiniteAutomata
 
 	private int statesCardinality;
 
-	private Map<Transition, Integer> transitionsMap;
+	private Map<Integer, List<Transition>> transitionsMap;
 
 	public FiniteAutomata()
 	{
@@ -31,7 +31,7 @@ public class FiniteAutomata implements IFiniteAutomata
 		this.statesCardinality = 0;
 		this.initialState = FiniteAutomata.DEFAULT_INITIAL_STATE;
 		this.finiteStates = new ArrayList<Integer>();
-		this.transitionsMap = new HashMap<Transition, Integer>();
+		this.transitionsMap = new HashMap<Integer, List<Transition>>();
 	}
 
 	@Override
@@ -49,32 +49,42 @@ public class FiniteAutomata implements IFiniteAutomata
 	}
 
 	@Override
-	public void addTransition(Transition transition, int state) throws TransitionAlreadyExistsException
+	public void addTransition(int state, Transition transition)
+			throws TransitionAlreadyExistsException
 	{
-		if (transition == null)
-		{
-			throw new IllegalArgumentException("Argument can't be null: transition.");
-		}
-		
 		if (state < 0 || state >= this.statesCardinality)
 		{
-			throw new IllegalArgumentException(String.format("State value: %1$d is invalid.", state));
+			throw new IllegalArgumentException(String.format(
+					"State value: %1$d is invalid.", state));
 		}
-		
-		if (this.transitionsMap.containsKey(transition))
+
+		if (transition == null)
 		{
-			throw new TransitionAlreadyExistsException(String.format("Transition (%1$d;%2$s) already exists.", transition.getState(), transition.getCharacter()));
+			throw new IllegalArgumentException(
+					"Argument can't be null: transition.");
 		}
-		
+
+		List<Transition> stateTransitions = this.transitionsMap.get(state);
+
+		if (stateTransitions.contains(transition))
+		{
+			throw new TransitionAlreadyExistsException(String.format(
+					"Transition (%1$d;%2$s) already exists.",
+					transition.getState(), transition.getCharacter()));
+		}
+
 		char character = transition.getCharacter();
 		int fromState = transition.getState();
-		
-		if (!this.alphabet.contains(character) || fromState < 0 || fromState >= this.statesCardinality)
+
+		if (!this.alphabet.contains(character) || fromState < 0
+				|| fromState >= this.statesCardinality)
 		{
-			throw new IllegalArgumentException(String.format("Transition (%1$d;%2$s) is invalid.", transition.getState(), transition.getCharacter()));
+			throw new IllegalArgumentException(String.format(
+					"Transition (%1$d;%2$s) is invalid.",
+					transition.getState(), transition.getCharacter()));
 		}
-		
-		this.transitionsMap.put(transition, state);
+
+		stateTransitions.add(transition);
 	}
 
 	private void checkState(int state)
@@ -118,25 +128,39 @@ public class FiniteAutomata implements IFiniteAutomata
 	}
 
 	@Override
-	public Map<Transition, Integer> getTransitionsMap()
+	public Map<Integer, List<Transition>> getTransitionsMap()
 	{
 		return this.transitionsMap;
 	}
 
 	@Override
-	public void removeTransition(Transition transition) throws NonExistentTransitionException
+	public void removeTransition(int state, Transition transition)
+			throws NonExistentTransitionException
 	{
+		if (state < 0 || state >= this.statesCardinality)
+		{
+			throw new IllegalArgumentException(String.format(
+					"State value: %1$d is invalid.", state));
+		}
+
 		if (transition == null)
 		{
-			throw new IllegalArgumentException("Argument can't be null: transition.");
+			throw new IllegalArgumentException(
+					"Argument can't be null: transition.");
 		}
-		
-		if (!this.transitionsMap.containsKey(transition))
+
+		List<Transition> stateTransitions = this.transitionsMap.get(state);
+
+		int index = stateTransitions.indexOf(transition);
+
+		if (index == -1)
 		{
-			throw new NonExistentTransitionException(String.format("Transition (%1$d;%2$s) does not exist.", transition.getState(), transition.getCharacter()));
+			throw new NonExistentTransitionException(String.format(
+					"Transition (%1$d;%2$s) does not exist.",
+					transition.getState(), transition.getCharacter()));
 		}
-		
-		this.transitionsMap.remove(transition);
+
+		stateTransitions.remove(index);
 	}
 
 	@Override
@@ -158,12 +182,16 @@ public class FiniteAutomata implements IFiniteAutomata
 		}
 
 		this.alphabet.clear();
-		this.transitionsMap.clear();
+
+		for (int i = 0; i < this.statesCardinality; i++)
+		{
+			this.transitionsMap.get(i).clear();
+		}
 
 		for (int i = 0; i < cardinality; i++)
 		{
 			this.alphabet
-					.add(FiniteAutomata.FINITE_AUTOMATA_ALPHABET.charAt(i));
+			.add(FiniteAutomata.FINITE_AUTOMATA_ALPHABET.charAt(i));
 		}
 	}
 
@@ -185,10 +213,13 @@ public class FiniteAutomata implements IFiniteAutomata
 		}
 
 		this.initialState = FiniteAutomata.DEFAULT_INITIAL_STATE;
-
 		this.finiteStates.clear();
-		this.transitionsMap.clear();
 
 		this.statesCardinality = cardinality;
+
+		for (int i = 0; i < this.statesCardinality; i++)
+		{
+			this.transitionsMap.put(i, new ArrayList<Transition>());
+		}
 	}
 }
