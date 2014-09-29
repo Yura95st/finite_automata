@@ -13,6 +13,15 @@ public class ExceptionHelperTests
 	}
 
 	@Test
+	public void getFullExceptionMessage_ExceptionMessageIsNull_ReturnEmptyString()
+	{
+		Exception exception = new Exception();
+
+		Assert.assertEquals("",
+				ExceptionHelper.getFullExceptionMessage(exception));
+	}
+
+	@Test
 	public void getFullExceptionMessage_ReturnValidString()
 	{
 		Exception innerException = new Exception("Inner exception message");

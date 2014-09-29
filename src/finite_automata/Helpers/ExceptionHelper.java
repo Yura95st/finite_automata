@@ -14,7 +14,11 @@ public class ExceptionHelper
 
 		while (exception != null)
 		{
-			stringBuilder.append(exception.getMessage());
+			String message = exception.getMessage();
+			
+			message = (message == null) ? "" : message;
+			
+			stringBuilder.append(message);
 			stringBuilder.append(System.getProperty("line.separator"));
 
 			exception = (Exception) exception.getCause();
