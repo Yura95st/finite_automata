@@ -49,42 +49,53 @@ public class FiniteAutomata implements IFiniteAutomata
 	}
 
 	@Override
-	public void addTransition(int state, Transition transition)
+	public void addTransition(Transition transition)
 			throws TransitionAlreadyExistsException
 	{
-		if (state < 0 || state >= this.statesCardinality)
+		this.checkTransition(transition);
+		
+		List<Transition> stateTransitions = this.transitionsMap.get(transition.getFromState());
+
+		if (stateTransitions.contains(transition))
 		{
-			throw new IllegalArgumentException(String.format(
-					"State value: %1$d is invalid.", state));
+			throw new TransitionAlreadyExistsException(String.format(
+					"Transition (%1$d; %2$s; %3$d) already exists.",
+					transition.getFromState(), transition.getCharacter(), transition.getToState()));
 		}
 
+		stateTransitions.add(transition);
+	}
+	
+	private void checkTransition(Transition transition)
+	{
 		if (transition == null)
 		{
 			throw new IllegalArgumentException(
 					"Argument can't be null: transition.");
 		}
-
-		List<Transition> stateTransitions = this.transitionsMap.get(state);
-
-		if (stateTransitions.contains(transition))
-		{
-			throw new TransitionAlreadyExistsException(String.format(
-					"Transition (%1$d;%2$s) already exists.",
-					transition.getState(), transition.getCharacter()));
-		}
-
+		
+		int fromState = transition.getFromState();
 		char character = transition.getCharacter();
-		int fromState = transition.getState();
-
-		if (!this.alphabet.contains(character) || fromState < 0
-				|| fromState >= this.statesCardinality)
+		int toState = transition.getToState();
+		
+		try
+		{
+			this.checkState(fromState);
+			this.checkState(toState);
+		}
+		catch(IllegalArgumentException exception)
 		{
 			throw new IllegalArgumentException(String.format(
-					"Transition (%1$d;%2$s) is invalid.",
-					transition.getState(), transition.getCharacter()));
+					"Transition (%1$d; %2$s; %3$d) is invalid.",
+					fromState, character, toState));
 		}
 
-		stateTransitions.add(transition);
+		if (!this.alphabet.contains(character))
+		{
+			throw new IllegalArgumentException(String.format(
+					"Transition (%1$d; %2$s; %3$d) is invalid.",
+					fromState, character, toState));
+		}
 	}
 
 	private void checkState(int state)
@@ -134,30 +145,20 @@ public class FiniteAutomata implements IFiniteAutomata
 	}
 
 	@Override
-	public void removeTransition(int state, Transition transition)
+	public void removeTransition(Transition transition)
 			throws NonExistentTransitionException
 	{
-		if (state < 0 || state >= this.statesCardinality)
-		{
-			throw new IllegalArgumentException(String.format(
-					"State value: %1$d is invalid.", state));
-		}
-
-		if (transition == null)
-		{
-			throw new IllegalArgumentException(
-					"Argument can't be null: transition.");
-		}
-
-		List<Transition> stateTransitions = this.transitionsMap.get(state);
+		this.checkTransition(transition);
+		
+		List<Transition> stateTransitions = this.transitionsMap.get(transition.getFromState());
 
 		int index = stateTransitions.indexOf(transition);
 
 		if (index == -1)
 		{
 			throw new NonExistentTransitionException(String.format(
-					"Transition (%1$d;%2$s) does not exist.",
-					transition.getState(), transition.getCharacter()));
+					"Transition (%1$d; %2$s %3$d) does not exist.",
+					transition.getFromState(), transition.getCharacter(), transition.getToState()));
 		}
 
 		stateTransitions.remove(index);

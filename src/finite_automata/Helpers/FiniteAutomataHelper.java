@@ -1,9 +1,11 @@
 package finite_automata.Helpers;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import finite_automata.FiniteAutomata;
 import finite_automata.IFiniteAutomata;
@@ -14,7 +16,7 @@ public class FiniteAutomataHelper
 {
 	/**
 	 * Converts finite automata to the list of strings
-	 * 
+	 *
 	 * @param finiteAutomata
 	 * @return
 	 */
@@ -78,11 +80,11 @@ public class FiniteAutomataHelper
 
 			for (Transition transition : entry.getValue())
 			{
-				stringBuilder.append(entry.getKey());
+				stringBuilder.append(transition.getFromState());
 				stringBuilder.append(" ");
 				stringBuilder.append(transition.getCharacter());
 				stringBuilder.append(" ");
-				stringBuilder.append(transition.getState());
+				stringBuilder.append(transition.getToState());
 				stringBuilder.append(System.getProperty("line.separator"));
 			}
 		}
@@ -94,7 +96,7 @@ public class FiniteAutomataHelper
 
 	/**
 	 * Gets finite automata from the list of strings
-	 * 
+	 *
 	 * @param list
 	 * @return
 	 * @throws FailedToGetFiniteAutomataFromStringListException
@@ -141,12 +143,10 @@ public class FiniteAutomataHelper
 			{
 				String[] transitionLine = list.get(i).split(" ");
 
-				Transition transition = new Transition(
-						Integer.parseInt(transitionLine[2]),
-						transitionLine[1].charAt(0));
+				Transition transition = new Transition(Integer.parseInt(transitionLine[0]),
+						transitionLine[1].charAt(0), Integer.parseInt(transitionLine[2]));
 
-				finiteAutomata.addTransition(
-						Integer.parseInt(transitionLine[0]), transition);
+				finiteAutomata.addTransition(transition);
 			}
 		}
 		catch (FailedToGetFiniteAutomataFromStringListException exception)

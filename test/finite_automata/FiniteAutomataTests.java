@@ -16,7 +16,7 @@ public class FiniteAutomataTests
 	private IFiniteAutomata finiteAutomata;
 
 	@Test
-	public void addFiniteState_FiniteStateSuccessfullySet()
+	public void addFiniteState_FiniteStateSuccessfullyAdded()
 			throws StateIsAlreadyFinalException
 	{
 		int state = this.finiteAutomata.getStatesCardinality() - 2;
@@ -46,28 +46,16 @@ public class FiniteAutomataTests
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void addTransition_InvalidState_ThrowsIllegalArgumentException()
-			throws TransitionAlreadyExistsException
-	{
-		Transition transition = new Transition(
-				this.finiteAutomata.getInitialState(), this.finiteAutomata
-						.getAlphabet().get(0));
-
-		this.finiteAutomata.addTransition(
-				this.finiteAutomata.getStatesCardinality(), transition);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
 	public void addTransition_InvalidTransition_ThrowsIllegalArgumentException()
 			throws TransitionAlreadyExistsException
 	{
 		Transition transition = new Transition(
 				this.finiteAutomata.getStatesCardinality(),
 				FiniteAutomata.FINITE_AUTOMATA_ALPHABET
-						.charAt(this.finiteAutomata.getAlphabet().size()));
+						.charAt(this.finiteAutomata.getAlphabet().size()), -1);
 
 		this.finiteAutomata.addTransition(
-				this.finiteAutomata.getInitialState(), transition);
+				transition);
 	}
 
 	@Test(expected = TransitionAlreadyExistsException.class)
@@ -78,16 +66,14 @@ public class FiniteAutomataTests
 		Transition transition = this.finiteAutomata.getTransitionsMap()
 				.get(state).get(0);
 
-		this.finiteAutomata.addTransition(state, transition);
+		this.finiteAutomata.addTransition(transition);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void addTransition_TransitionIsNull_ThrowsIllegalArgumentException()
 			throws TransitionAlreadyExistsException
 	{
-		int state = this.finiteAutomata.getInitialState();
-
-		this.finiteAutomata.addTransition(state, null);
+		this.finiteAutomata.addTransition(null);
 	}
 
 	@Test
@@ -95,21 +81,14 @@ public class FiniteAutomataTests
 			throws TransitionAlreadyExistsException,
 			StateIsAlreadyFinalException
 	{
-		int state = this.finiteAutomata.getInitialState();
+		Transition transition = new Transition(this.finiteAutomata.getInitialState(), this.finiteAutomata.getAlphabet().get(1), 
+				this.finiteAutomata.getFiniteStates().get(0));
 
-		Transition transition = new Transition(this.finiteAutomata
-				.getFiniteStates().get(0), this.finiteAutomata.getAlphabet()
-				.get(1));
-
-		Assert.assertEquals(false, this.finiteAutomata.getTransitionsMap()
-				.containsKey(transition));
-
-		this.finiteAutomata.addTransition(state, transition);
+		this.finiteAutomata.addTransition(transition);
 
 		Assert.assertEquals(
 				true,
-				this.finiteAutomata.getTransitionsMap().get(state)
-						.contains(transition));
+				this.finiteAutomata.getTransitionsMap().get(transition.getFromState()).contains(transition));
 	}
 
 	@Test
@@ -149,12 +128,10 @@ public class FiniteAutomataTests
 	public void removeTransition_TransitionDoesNotExist_ThrowsNonExistentTransitionException()
 			throws NonExistentTransitionException
 	{
-		int state = this.finiteAutomata.getInitialState();
-		Transition transition = new Transition(
-				this.finiteAutomata.getInitialState(), this.finiteAutomata
-						.getAlphabet().get(1));
+		Transition transition = new Transition(this.finiteAutomata.getInitialState(), this.finiteAutomata
+						.getAlphabet().get(0), this.finiteAutomata.getInitialState());
 
-		this.finiteAutomata.removeTransition(state, transition);
+		this.finiteAutomata.removeTransition(transition);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -162,21 +139,31 @@ public class FiniteAutomataTests
 			throws NonExistentTransitionException
 	{
 		this.finiteAutomata.removeTransition(
-				this.finiteAutomata.getInitialState(), null);
+				null);
 	}
 
 	@Test
 	public void removeTransition_TransitionIsSuccessfullyRemoved()
 			throws NonExistentTransitionException
 	{
-		int state = this.finiteAutomata.getInitialState();
 		Transition transition = this.finiteAutomata.getTransitionsMap()
-				.get(state).get(0);
+				.get(this.finiteAutomata.getInitialState()).get(0);
 
-		this.finiteAutomata.removeTransition(state, transition);
+		this.finiteAutomata.removeTransition(transition);
 
-		Assert.assertEquals(false, this.finiteAutomata.getTransitionsMap()
-				.containsKey(transition));
+		Assert.assertEquals(false, this.finiteAutomata.getTransitionsMap().get(transition.getFromState()).contains(transition));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void removeTransition_InvalidTransition_ThrowsIllegalArgumentException()
+			throws NonExistentTransitionException
+	{
+		Transition transition = new Transition(
+				this.finiteAutomata.getStatesCardinality(),
+				FiniteAutomata.FINITE_AUTOMATA_ALPHABET
+						.charAt(this.finiteAutomata.getAlphabet().size()), -1);
+
+		this.finiteAutomata.removeTransition(transition);
 	}
 
 	@Test
@@ -186,15 +173,22 @@ public class FiniteAutomataTests
 		{
 			this.finiteAutomata.setAlphabetCardinality(-1);
 
+			Assert.fail();
+		}
+		catch (IllegalArgumentException exception)
+		{
+		}
+		
+		try
+		{
 			this.finiteAutomata
-					.setAlphabetCardinality(FiniteAutomata.FINITE_AUTOMATA_ALPHABET
-							.length() + 1);
+			.setAlphabetCardinality(FiniteAutomata.FINITE_AUTOMATA_ALPHABET
+					.length() + 1);
 
 			Assert.fail();
 		}
 		catch (IllegalArgumentException exception)
 		{
-
 		}
 	}
 
@@ -229,9 +223,15 @@ public class FiniteAutomataTests
 		try
 		{
 			this.finiteAutomata.setInitialState(-1);
-
+			Assert.fail();
+		}
+		catch (IllegalArgumentException exception)
+		{
+		}
+		
+		try
+		{
 			this.finiteAutomata.setInitialState(initialState);
-
 			Assert.fail();
 		}
 		catch (IllegalArgumentException exception)
@@ -257,6 +257,7 @@ public class FiniteAutomataTests
 
 		Assert.assertEquals(FiniteAutomata.DEFAULT_INITIAL_STATE,
 				this.finiteAutomata.getInitialState());
+		
 		Assert.assertEquals(0, this.finiteAutomata.getFiniteStates().size());
 
 		for (int i = 0, count = this.finiteAutomata.getStatesCardinality(); i < count; i++)
@@ -276,7 +277,7 @@ public class FiniteAutomataTests
 		this.finiteAutomata.setInitialState(0);
 		this.finiteAutomata.addFiniteState(2);
 
-		this.finiteAutomata.addTransition(0, new Transition(1, 'a'));
-		this.finiteAutomata.addTransition(1, new Transition(2, 'b'));
+		this.finiteAutomata.addTransition(new Transition(0, 'a', 1));
+		this.finiteAutomata.addTransition(new Transition(1, 'b', 2));
 	}
 }

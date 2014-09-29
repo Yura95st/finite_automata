@@ -19,13 +19,11 @@ public interface IFiniteAutomata
 
 	/**
 	 * Adds transition
-	 * 
-	 * @param state
-	 * @param transition
 	 *
+	 * @param transition
 	 * @throws TransitionAlreadyExistsException
 	 */
-	void addTransition(int state, Transition transition)
+	void addTransition(Transition transition)
 			throws TransitionAlreadyExistsException;
 
 	/**
@@ -65,11 +63,10 @@ public interface IFiniteAutomata
 
 	/**
 	 * Removes transition
-	 * 
-	 * @param state
+	 *
 	 * @param transition
 	 */
-	void removeTransition(int state, Transition transition)
+	void removeTransition(Transition transition)
 			throws NonExistentTransitionException;
 
 	/**
@@ -82,9 +79,9 @@ public interface IFiniteAutomata
 	/**
 	 * Sets initial state
 	 *
-	 * @param i
+	 * @param state
 	 */
-	void setInitialState(int i);
+	void setInitialState(int state);
 
 	/**
 	 * Sets cardinality of the states

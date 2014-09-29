@@ -4,12 +4,15 @@ public class Transition
 {
 	private char character;
 
-	private int state;
+	private int fromState;
 
-	public Transition(int state, char character)
+	private int toState;
+
+	public Transition(int fromState, char character, int toState)
 	{
 		this.character = character;
-		this.state = state;
+		this.fromState = fromState;
+		this.toState = toState;
 	}
 
 	@Override
@@ -24,7 +27,6 @@ public class Transition
 		{
 			return false;
 		}
-
 		if (this.getClass() != obj.getClass())
 		{
 			return false;
@@ -37,7 +39,12 @@ public class Transition
 			return false;
 		}
 
-		if (this.state != other.state)
+		if (this.fromState != other.fromState)
+		{
+			return false;
+		}
+
+		if (this.toState != other.toState)
 		{
 			return false;
 		}
@@ -56,23 +63,35 @@ public class Transition
 	}
 
 	/**
-	 * Returns the state
+	 * Returns the fromState
 	 *
 	 * @return
 	 */
-	public int getState()
+	public int getFromState()
 	{
-		return this.state;
+		return this.fromState;
+	}
+
+	/**
+	 * Returns the toState
+	 *
+	 * @return
+	 */
+	public int getToState()
+	{
+		return this.toState;
 	}
 
 	@Override
 	public int hashCode()
 	{
 		final int prime = 31;
+
 		int result = 1;
 
 		result = prime * result + this.character;
-		result = prime * result + this.state;
+		result = prime * result + this.fromState;
+		result = prime * result + this.toState;
 
 		return result;
 	}
