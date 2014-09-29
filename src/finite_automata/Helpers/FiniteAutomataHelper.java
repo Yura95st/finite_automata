@@ -1,11 +1,9 @@
 package finite_automata.Helpers;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import finite_automata.FiniteAutomata;
 import finite_automata.IFiniteAutomata;
@@ -22,14 +20,14 @@ public class FiniteAutomataHelper
 	 */
 	public static List<String> convertFiniteAutomataToList(
 			final IFiniteAutomata finiteAutomata)
-	{
+			{
 		if (finiteAutomata == null)
 		{
 			throw new IllegalArgumentException();
 		}
 
 		List<String> list = new ArrayList<String>()
-				{
+		{
 			{
 				this.add(Integer.toString(finiteAutomata.getAlphabet().size()));
 				this.add(Integer.toString(finiteAutomata.getStatesCardinality()));
@@ -41,10 +39,10 @@ public class FiniteAutomataHelper
 						.convertTransitionsMapToString(finiteAutomata
 								.getTransitionsMap()));
 			}
-				};
+		};
 
-		return list;
-	}
+				return list;
+			}
 
 	private static String convertFiniteStatesListToString(
 			List<Integer> finiteStates)
@@ -103,7 +101,7 @@ public class FiniteAutomataHelper
 	 */
 	public static IFiniteAutomata getFiniteAutomataFromStringList(
 			List<String> list)
-			throws FailedToGetFiniteAutomataFromStringListException
+					throws FailedToGetFiniteAutomataFromStringListException
 	{
 		int listSize = list.size();
 
@@ -118,7 +116,7 @@ public class FiniteAutomataHelper
 		try
 		{
 			finiteAutomata
-					.setAlphabetCardinality(Integer.parseInt(list.get(0)));
+			.setAlphabetCardinality(Integer.parseInt(list.get(0)));
 
 			finiteAutomata.setStatesCardinality(Integer.parseInt(list.get(1)));
 
@@ -143,8 +141,10 @@ public class FiniteAutomataHelper
 			{
 				String[] transitionLine = list.get(i).split(" ");
 
-				Transition transition = new Transition(Integer.parseInt(transitionLine[0]),
-						transitionLine[1].charAt(0), Integer.parseInt(transitionLine[2]));
+				Transition transition = new Transition(
+						Integer.parseInt(transitionLine[0]),
+						transitionLine[1].charAt(0),
+						Integer.parseInt(transitionLine[2]));
 
 				finiteAutomata.addTransition(transition);
 			}
