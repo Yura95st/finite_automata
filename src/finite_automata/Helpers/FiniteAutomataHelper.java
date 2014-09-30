@@ -105,72 +105,82 @@ public class FiniteAutomataHelper
 	 */
 	public static List<String> getAllAcceptedWords(
 			final IFiniteAutomata finiteAutomata)
-	{
+			{
+		if (finiteAutomata == null)
+		{
+			throw new IllegalArgumentException(
+					"Argument can't be null: finiteAutomata");
+		}
+		
 		List<String> words = new ArrayList<String>();
 		
-		Set<Transition> visited = new HashSet<Transition>();
-		
-		Stack<Map.Entry<String, Transition>> stack = new Stack<Map.Entry<String, Transition>>();
-
-		Map<String, Transition> poppedTransitions = new HashMap<String, Transition>();
-		
-		// Initial step
-		Transition initialTransition = new Transition(
-				finiteAutomata.getInitialState(), '*',
-				finiteAutomata.getInitialState());
-		
-		stack.push(new AbstractMap.SimpleEntry<>("", initialTransition));
-		
-		while (!stack.isEmpty())
+		if (finiteAutomata.getTransitionsMap().size() > 0)
 		{
-			Map.Entry<String, Transition> entry = stack.peek();
-			
-			visited.add(entry.getValue());
-			
-			boolean popFromStack = true;
-			
-			List<Transition> children = finiteAutomata.getTransitionsMap().get(
-					entry.getValue().getToState());
-			
-			for (Transition childTransition : children)
+			Set<Transition> visited = new HashSet<Transition>();
+
+			Stack<Map.Entry<String, Transition>> stack = new Stack<Map.Entry<String, Transition>>();
+
+			Map<String, Transition> poppedTransitions = new HashMap<String, Transition>();
+
+			// Initial step
+			Transition initialTransition = new Transition(
+					finiteAutomata.getInitialState(), '*',
+					finiteAutomata.getInitialState());
+
+			stack.push(new AbstractMap.SimpleEntry<>("", initialTransition));
+
+			while (!stack.isEmpty())
 			{
-				if (!visited.contains(childTransition))
+				Map.Entry<String, Transition> entry = stack.peek();
+
+				visited.add(entry.getValue());
+
+				boolean popFromStack = true;
+
+				List<Transition> children = finiteAutomata.getTransitionsMap()
+						.get(entry.getValue().getToState());
+
+				for (Transition childTransition : children)
 				{
-					String key = entry.getKey()
-							+ childTransition.getCharacter();
-
-					// Prevent from visiting the same chain of transitions twice.
-					if (!poppedTransitions.containsKey(key))
+					if (!visited.contains(childTransition))
 					{
-						stack.push(new AbstractMap.SimpleEntry<>(key,
-								childTransition));
+						String key = entry.getKey()
+								+ childTransition.getCharacter();
 
-						popFromStack = false;
+						// Prevent from visiting the same chain of transitions
+						// twice.
+						if (!poppedTransitions.containsKey(key))
+						{
+							stack.push(new AbstractMap.SimpleEntry<>(key,
+									childTransition));
+
+							popFromStack = false;
+						}
 					}
 				}
-			}
-			
-			if (popFromStack)
-			{
-				Map.Entry<String, Transition> poppedEntry = stack.pop();
 
-				poppedTransitions.put(poppedEntry.getKey(),
-						poppedEntry.getValue());
-				
-				visited.remove(poppedEntry.getValue());
-
-				if (finiteAutomata.getFiniteStates().contains(
-						poppedEntry.getValue().getToState()))
+				if (popFromStack)
 				{
-					String word = poppedEntry.getKey();
-					
-					words.add(word);
+					Map.Entry<String, Transition> poppedEntry = stack.pop();
+
+					poppedTransitions.put(poppedEntry.getKey(),
+							poppedEntry.getValue());
+
+					visited.remove(poppedEntry.getValue());
+
+					if (finiteAutomata.getFiniteStates().contains(
+							poppedEntry.getValue().getToState()))
+					{
+						String word = poppedEntry.getKey();
+
+						words.add(word);
+					}
 				}
 			}
 		}
 		
 		return words;
-	}
+			}
 	
 	/**
 	 * Gets finite automata from the list of strings
@@ -183,6 +193,11 @@ public class FiniteAutomataHelper
 			List<String> list)
 					throws FailedToGetFiniteAutomataFromStringListException
 	{
+		if (list == null)
+		{
+			throw new IllegalArgumentException("Argument can't be null: list.");
+		}
+
 		int listSize = list.size();
 		
 		if (listSize < 5)
