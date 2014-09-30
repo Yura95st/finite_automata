@@ -2,9 +2,11 @@ package finite_automata.Helpers;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import finite_automata.FiniteAutomata;
@@ -22,14 +24,14 @@ public class FiniteAutomataHelper
 	 */
 	public static List<String> convertFiniteAutomataToList(
 			final IFiniteAutomata finiteAutomata)
-			{
+	{
 		if (finiteAutomata == null)
 		{
 			throw new IllegalArgumentException();
 		}
-		
+
 		List<String> list = new ArrayList<String>()
-		{
+				{
 			{
 				this.add(Integer.toString(finiteAutomata.getAlphabet().size()));
 				this.add(Integer.toString(finiteAutomata.getStatesCardinality()));
@@ -41,43 +43,43 @@ public class FiniteAutomataHelper
 						.convertTransitionsMapToString(finiteAutomata
 								.getTransitionsMap()));
 			}
-		};
-		
-		return list;
-			}
-	
+				};
+
+				return list;
+	}
+
 	private static String convertFiniteStatesListToString(
 			List<Integer> finiteStates)
 	{
 		int finiteStatesCount = finiteStates.size();
-		
+
 		StringBuilder stringBuilder = new StringBuilder();
-		
+
 		stringBuilder.append(finiteStatesCount);
-		
+
 		for (int i = 0; i < finiteStatesCount; i++)
 		{
 			stringBuilder.append(" ");
 			stringBuilder.append(finiteStates.get(i));
 		}
-		
+
 		String finiteStatesString = stringBuilder.toString();
-		
+
 		return finiteStatesString;
 	}
-	
+
 	private static String convertTransitionsMapToString(
 			Map<Integer, List<Transition>> transitionsMap)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		
+
 		Iterator iterator = transitionsMap.entrySet().iterator();
-		
+
 		while (iterator.hasNext())
 		{
 			Map.Entry<Integer, List<Transition>> entry = (Map.Entry<Integer, List<Transition>>) iterator
 					.next();
-			
+
 			for (Transition transition : entry.getValue())
 			{
 				stringBuilder.append(transition.getFromState());
@@ -88,12 +90,12 @@ public class FiniteAutomataHelper
 				stringBuilder.append(System.getProperty("line.separator"));
 			}
 		}
-		
+
 		String transitionsMapString = stringBuilder.toString().trim();
-		
+
 		return transitionsMapString;
 	}
-	
+
 	/**
 	 * Gets the list of words, accepted by the automata
 	 *
@@ -102,76 +104,67 @@ public class FiniteAutomataHelper
 	 */
 	public static List<String> getAllAcceptedWords(
 			final IFiniteAutomata finiteAutomata)
-	{
-		System.out.println("======");
-
+			{
 		List<String> words = new ArrayList<String>();
-		
-		List<Transition> visited = new ArrayList<Transition>();
 
-		Stack<Map.Entry<String, List<Transition>>> stack = new Stack<Map.Entry<String, List<Transition>>>();
-		
+		Set<Transition> visited = new HashSet<Transition>();
+
+		Stack<Map.Entry<String, Transition>> stack = new Stack<Map.Entry<String, Transition>>();
+
 		// Initial step
-		List<Transition> initialTransitions = finiteAutomata
-				.getTransitionsMap().get(finiteAutomata.getInitialState());
-		
-		stack.push(new AbstractMap.SimpleEntry<>("", initialTransitions));
-		
+		Transition initialTransition = new Transition(
+				finiteAutomata.getInitialState(), '*',
+				finiteAutomata.getInitialState());
+
+		stack.push(new AbstractMap.SimpleEntry<>("", initialTransition));
+
 		while (!stack.isEmpty())
 		{
-			Map.Entry<String, List<Transition>> entry = stack.peek();
-			
-			boolean popFromStack = true;
-			
-			for (Transition transition : entry.getValue())
-			{
-				visited.add(transition);
+			Map.Entry<String, Transition> entry = stack.peek();
 
-				List<Transition> children = new ArrayList<Transition>();
-				
-				List<Transition> stateTransitions = finiteAutomata
-						.getTransitionsMap().get(transition.getToState());
-				
-				for (Transition childTransition : stateTransitions)
+			visited.add(entry.getValue());
+
+			boolean popFromStack = true;
+
+			List<Transition> children = finiteAutomata.getTransitionsMap().get(
+					entry.getValue().getToState());
+
+			for (Transition childTransition : children)
+			{
+				if (!visited.contains(childTransition))
 				{
-					if (!visited.contains(childTransition))
-					{
-						children.add(childTransition);
-					}
-				}
-				
-				if (children.size() > 0)
-				{
-					String key = entry.getKey() + transition.getCharacter();
+					String key = entry.getKey()
+							+ childTransition.getCharacter();
 					
-					stack.push(new AbstractMap.SimpleEntry<>(key, children));
+					stack.push(new AbstractMap.SimpleEntry<>(key,
+							childTransition));
 					
 					popFromStack = false;
 				}
 			}
-			
+
 			if (popFromStack)
 			{
 				stack.pop();
 
-				for (Transition transition : entry.getValue())
+				for (Transition childTransition : children)
 				{
-					if (finiteAutomata.getFiniteStates().contains(
-							transition.getToState()))
-					{
-						String word = entry.getKey()
-								+ transition.getCharacter();
-						words.add(word);
+					visited.remove(childTransition);
+				}
+				
+				if (finiteAutomata.getFiniteStates().contains(
+						entry.getValue().getToState()))
+				{
+					String word = entry.getKey();
 
-						System.out.println(word);
-					}
+					words.add(word);
 				}
 			}
 		}
-		
+
 		return words;
-	}
-	
+			}
+
 	/**
 	 * Gets finite automata from the list of strings
 	 *
@@ -181,51 +174,51 @@ public class FiniteAutomataHelper
 	 */
 	public static IFiniteAutomata getFiniteAutomataFromStringList(
 			List<String> list)
-					throws FailedToGetFiniteAutomataFromStringListException
+			throws FailedToGetFiniteAutomataFromStringListException
 	{
 		int listSize = list.size();
-		
+
 		if (listSize < 5)
 		{
 			throw new FailedToGetFiniteAutomataFromStringListException(
 					"Invalid list format: list must contain at least 5 items.");
 		}
-		
+
 		IFiniteAutomata finiteAutomata = new FiniteAutomata();
-		
+
 		try
 		{
 			finiteAutomata
-			.setAlphabetCardinality(Integer.parseInt(list.get(0)));
-			
+					.setAlphabetCardinality(Integer.parseInt(list.get(0)));
+
 			finiteAutomata.setStatesCardinality(Integer.parseInt(list.get(1)));
-			
+
 			finiteAutomata.setInitialState(Integer.parseInt(list.get(2)));
-			
+
 			String[] finiteStatesLine = list.get(3).split(" ");
-			
+
 			// Ignore the first parameter - cardinality of the finiteStates set.
 			if (finiteStatesLine.length <= 1)
 			{
 				throw new FailedToGetFiniteAutomataFromStringListException(
 						"Finite automata must have at least one finite state.");
 			}
-			
+
 			for (int i = 1, count = finiteStatesLine.length; i < count; i++)
 			{
 				finiteAutomata.addFiniteState(Integer
 						.parseInt(finiteStatesLine[i]));
 			}
-			
+
 			for (int i = 4; i < listSize; i++)
 			{
 				String[] transitionLine = list.get(i).split(" ");
-				
+
 				Transition transition = new Transition(
 						Integer.parseInt(transitionLine[0]),
 						transitionLine[1].charAt(0),
 						Integer.parseInt(transitionLine[2]));
-				
+
 				finiteAutomata.addTransition(transition);
 			}
 		}
@@ -238,7 +231,7 @@ public class FiniteAutomataHelper
 			throw new FailedToGetFiniteAutomataFromStringListException(
 					"Failed to get finite automata from list.", exception);
 		}
-		
+
 		return finiteAutomata;
 	}
 }
