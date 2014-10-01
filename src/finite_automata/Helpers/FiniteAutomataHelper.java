@@ -3,9 +3,11 @@ package finite_automata.Helpers;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import finite_automata.FiniteAutomata;
@@ -101,7 +103,7 @@ public class FiniteAutomataHelper
 	 * @param finiteAutomata
 	 * @return
 	 */
-	public static List<String> getAllAcceptedWords(
+	public static Set<String> getAllAcceptedWords(
 			final IFiniteAutomata finiteAutomata)
 	{
 		if (finiteAutomata == null)
@@ -110,7 +112,7 @@ public class FiniteAutomataHelper
 					"Argument can't be null: finiteAutomata");
 		}
 
-		List<String> words = new ArrayList<String>();
+		Set<String> words = new HashSet<String>();
 
 		if (finiteAutomata.getTransitionsMap().size() > 0)
 		{

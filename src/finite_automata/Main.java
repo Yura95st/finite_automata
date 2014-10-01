@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 
 import finite_automata.Helpers.ExceptionHelper;
 import finite_automata.Helpers.FiniteAutomataHelper;
@@ -29,7 +30,7 @@ public class Main
 				System.out.println(string);
 			}
 
-			List<String> words = FiniteAutomataHelper
+			Set<String> words = FiniteAutomataHelper
 					.getAllAcceptedWords(finiteAutomata);
 
 			System.out.println();
